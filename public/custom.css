@@ -7,35 +7,23 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
-}
-
 .App {
   text-align: center;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 40vmin;
-  pointer-events: none;
+.nav-root {
+	flex: 1;
+	box-sizing: inherit;
 }
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.nav-heading {
+	flex: 1;
+	text-align: left;
 }
-
-.App-link {
-  color: #61dafb;
+#login-model {
+	width: 500px;
 }
-
+#login-btn {
+	margin-top: 16px;
+	margin-bottom: 8px
+}
 
