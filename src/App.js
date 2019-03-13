@@ -16,7 +16,11 @@ import Grid from '@material-ui/core/Grid';
 //other
 import { history } from './helpers';
 import { userActions } from './actions';
-import { apiCall } from './services/network';
+import { apiPostCall } from './services/network';
+
+//routes
+import BlogFeed from './pages/BlogFeed';
+import Blog from './pages/Blog';
 
 class App extends Component {
 	constructor(){
@@ -62,7 +66,7 @@ class App extends Component {
 				email,
 				password
 			}
-      apiCall('POST', '/login', sendData, successCallback, errorCallback)
+      apiPostCall('/login', sendData, successCallback, errorCallback)
 		}
 	}
 	
@@ -141,7 +145,12 @@ class App extends Component {
 				<div>
 					<Router history={history}>
 						<div>
-							
+							<Router history={history}>
+                <div>
+									<Route path="/blogs" component={BlogFeed} />
+									<Route path="/blog/:id" component={Blog} />								
+								</div>
+							</Router>
 						</div>
 					</Router>
 				</div>
