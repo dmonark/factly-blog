@@ -1,4 +1,4 @@
-export function apiPostCall(url, data, successCallback, errorCallback){
+export function apiPostCall(url, data, token, successCallback, errorCallback){
   var status = null
 	const BASE_URL = "http://localhost:8000/api"
 	fetch(BASE_URL + url, {
@@ -8,6 +8,7 @@ export function apiPostCall(url, data, successCallback, errorCallback){
       credentials: "same-origin",
       headers: {
         "Content-Type": "application/json",
+				"x-token": token
       },
 			body: JSON.stringify(data)
 		}
@@ -17,7 +18,7 @@ export function apiPostCall(url, data, successCallback, errorCallback){
 		return response.json()	
 	})
   .then((response) => {
-		if(status === 200)
+		if(status === 200 || status === 201)
 			successCallback(response)
 		else
 			errorCallback(response)
@@ -42,7 +43,7 @@ export function apiGetCall(url, successCallback, errorCallback){
 		return response.json()	
 	})
   .then((response) => {
-		if(status === 200)
+		if(status === 200 || status === 201)
 			successCallback(response)
 		else
 			errorCallback(response)

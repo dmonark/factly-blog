@@ -12,6 +12,7 @@ import Grid from '@material-ui/core/Grid';
 
 //other
 import { apiGetCall } from './../../services/network';
+import BlogCard from './BlogCard';
 
 class BlogFeed extends Component {
 	constructor(props) {
@@ -45,25 +46,20 @@ class BlogFeed extends Component {
     var blogList = []
 		for(var i = 0; i < blogs.length; i++){
 			blogList.push(
-				<Grid key={blogs[i]._id}item xs={3}>
-					<Card  className="blog-card">
-						<CardContent>
-							<Typography variant="h5" component="h2">{blogs[i].title}</Typography>
-							<Typography component="p">{blogs[i].desc}</Typography>
-						</CardContent>
-						<CardActions>
-							<Link to={"/blog/"+blogs[i]._id}>
-								<Button size="small">Learn More</Button>
-							</Link>
-						</CardActions>
-					</Card>
-				</Grid>
+				<BlogCard
+					blog={blogs[i]}
+					key={blogs[i]._id}
+				/>
 			)
 		}
 		return (
-      <div className="container">
+      <div>
 				<Grid container spacing={8}>
-					{blogList}
+					<Grid item xs={3}>
+					</Grid>
+					<Grid item xs={4}>
+						{blogList}
+					</Grid>
 				</Grid>
       </div>
     );

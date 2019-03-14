@@ -66,7 +66,7 @@ class App extends Component {
 				email,
 				password
 			}
-      apiPostCall('/login', sendData, successCallback, errorCallback)
+      apiPostCall('/login', sendData, null, successCallback, errorCallback)
 		}
 	}
 	
@@ -142,7 +142,7 @@ class App extends Component {
 						</Dialog>
 					</div>
 				</div>
-				<div>
+				<div className="container">
 					<Router history={history}>
 						<div>
 							<Router history={history}>

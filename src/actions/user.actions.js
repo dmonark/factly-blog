@@ -5,8 +5,8 @@ export const userActions = {
   logout
 };
 
-function login(user) {
-	return { type: userConstants.LOGIN_SUCCESS, user };
+function login(user, token) {
+	return { type: userConstants.LOGIN_SUCCESS, user, token };
 }
 
 function logout() {
