@@ -12,6 +12,11 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
+import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+import Select from '@material-ui/core/Select';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
 
 //other
 import { history } from './helpers';
@@ -27,9 +32,13 @@ class App extends Component {
 		super();
 		this.state={
 			loginModel: false,
+			postModel: false,
 			email: "monark@gmail.com",
 			password: "12345",
-			isFetching: false
+			isFetching: false,
+			title: "",
+			desc: "",
+			category: "all"
 		}
 	}
 	
@@ -70,6 +79,36 @@ class App extends Component {
 		}
 	}
 	
+	addPost(){
+		this.setState({ 
+			isFetching: true 
+		});
+		
+		var successCallback = function(data){
+			this.setState({ 
+				isFetching: false,
+				postModel: false
+			});
+		}.bind(this)
+		
+		var errorCallback = function(data){
+			this.setState({ 
+				isFetching: false
+			});
+		}
+		
+		const { title, desc, category } = this.state;
+    
+    if (title && desc && category){
+			var sendData = {
+				title,
+				desc,
+				category
+			}
+      apiPostCall('/blog', sendData, this.props.auth.token, successCallback, errorCallback)
+		}
+	}
+	
 	handleLogout(){
 		localStorage.removeItem('user');
 		localStorage.removeItem('token');
@@ -89,7 +128,12 @@ class App extends Component {
 							</Typography>
 							{
 								auth.user ? (
-									<Button color="inherit" onClick={() => {this.handleLogout()}}>Logout</Button>
+									<div>
+										<Button color="inherit" onClick={()=>{this.setState({postModel: true})}}>
+											<CloudUploadIcon /> POST
+										</Button>
+										<Button color="inherit" onClick={() => {this.handleLogout()}}>Logout</Button>
+									</div>
 								) : (
 									<Button color="inherit" onClick={()=>{this.setState({loginModel: true})}}>Login</Button>
 								)
@@ -110,7 +154,7 @@ class App extends Component {
 										<div>
 											<TextField
 												fullWidth
-												id="standard-name"
+												id="login-email"
 												label="Email"
 												value={this.state.email}
 												onChange={this.handleChange('email')}
@@ -121,7 +165,7 @@ class App extends Component {
 										<div>
 											<TextField
 												fullWidth
-												id="standard-name"
+												id="login-password"
 												label="Password"
 												type="password"
 												value={this.state.password}
@@ -135,6 +179,67 @@ class App extends Component {
 												LOGIN
 											</Button>
 										</div>
+									</Grid>
+								</Grid>
+								</div>
+							</DialogContent>
+						</Dialog>
+					</div>
+					<div>
+						<Dialog
+              open={this.state.postModel}
+              onClose={() => {this.setState({postModel: false})}}
+            >
+              <DialogTitle>Post</DialogTitle>  
+              <DialogContent>
+								<div id="post-model">
+								<Grid container spacing={8}>	
+									<Grid item xs={8}>
+										<TextField
+											fullWidth
+											id="post-title"
+											label="Title"
+											value={this.state.title}
+											onChange={this.handleChange('title')}
+											margin="normal"
+											variant="outlined"
+										/>
+									</Grid>
+									<Grid item xs={4}>
+										<TextField
+											fullWidth
+											select
+											id="post-title"
+											label="Category"
+											value={this.state.category}
+											onChange={this.handleChange('category')}	
+											margin="normal"
+											variant="outlined"
+										>
+											<MenuItem value="science">Science</MenuItem>
+											<MenuItem value="tech">Tech</MenuItem>
+											<MenuItem value="Politics">Politics</MenuItem>
+										</TextField>
+									</Grid>
+									<Grid item xs={12}>
+										<TextField
+											id="post-desc"
+											label="Desc"
+											fullWidth
+											multiline
+											rows="6"
+											value={this.state.desc}
+											onChange={this.handleChange('desc')}
+											margin="normal"
+											variant="outlined"
+										/>
+									</Grid>
+									<Grid item xs={9}>
+									</Grid>
+									<Grid item xs={3}>
+										<Button fullWidth variant="outlined" color="primary" onClick={() => {this.addPost()}}>
+											POST
+										</Button>
 									</Grid>
 								</Grid>
 								</div>

@@ -34,15 +34,20 @@ class BlogCard extends Component {
 			comments: [],
 			liked: likedByUser
 		}
-		this.getAllComments = this.getAllComments.bind(this)
-		this.postComment = this.postComment.bind(this)
 	}
 	postComment(){
 		var successCallback = function(data){
-			this.setState({
-				newComment: ""
+			var commentsCopy = this.state.comments
+			commentsCopy.push({
+				'text': this.state.newComment,
+				'userId': this.props.auth.user._id,
+				'createdAt': Date.now(),
+				'author': this.props.auth.user
 			})
-			this.getAllComments();
+			this.setState({
+				newComment: "",
+				comments: commentsCopy
+			})
 		}.bind(this)
 		
 		var errorCallback = function(data){
@@ -101,7 +106,7 @@ class BlogCard extends Component {
 			)
 		}
 		return (
-      <div>
+      <div className="each-blog">
 				<Card  className="blog-card">
 					<CardContent>
 						<Typography variant="h5" component="h2">{this.props.blog.title}</Typography>
@@ -116,9 +121,7 @@ class BlogCard extends Component {
 							)
 						}
 						<Button size="small" onClick={()=>{this.getAllComments()}}>COMMENT</Button>
-						<Link to={"/blog/"+this.props.blog._id}>
-							<Button size="small">FULL ARTICLE</Button>
-						</Link>
+						<Button component={Link} to={"/blog/"+this.props.blog._id} size="small">FULL ARTICLE</Button>
 					</CardActions>
 					<Collapse in={this.state.commentOpen} timeout="auto">
 						<CardContent>
@@ -149,7 +152,11 @@ class BlogCard extends Component {
 							</div>
 							<div>
 								<List>
-									{commentList}
+								{
+									commentList.length === 0 ? (
+										<Typography component="p">Be the first one to comment</Typography>
+									) : commentList 
+								}
 								</List>
 							</div>
 						</CardContent>
