@@ -24,11 +24,15 @@ import { apiGetCall, apiPostCall } from './../../services/network';
 class BlogCard extends Component {
 	constructor(props) {
 		super(props);
+		var likedByUser = false
+		if(props.auth.user && props.blog.likes.find(x => x.userId === props.auth.user._id))
+			var likedByUser = true
 		this.state ={
 			liked: false,
 			commentOpen: false,
 			newComment: "",
-			comments: []
+			comments: [],
+			liked: likedByUser
 		}
 		this.getAllComments = this.getAllComments.bind(this)
 		this.postComment = this.postComment.bind(this)
@@ -65,6 +69,19 @@ class BlogCard extends Component {
 		
 		apiGetCall('/blog/'+this.props.blog._id+'/comment', successCallback, errorCallback)
 	}
+	likeUnlike(actionType){
+		var successCallback = function(data){
+			this.setState({
+				liked: actionType
+			})
+		}.bind(this)
+		
+		var errorCallback = function(data){
+			console.log("ERROR")
+		}
+		var whichURL = actionType ? '/like' : '/unlike'
+		apiPostCall('/blog/'+ this.props.blog._id + whichURL , {}, this.props.auth.token, successCallback, errorCallback)
+	}
 	
 	handleChange = name => event => {
     this.setState({ [name]: event.target.value });
@@ -91,7 +108,13 @@ class BlogCard extends Component {
 						<Typography component="p">{this.props.blog.desc}</Typography>
 					</CardContent>
 					<CardActions>
-						<Button size="small">LIKE</Button>
+						{
+							this.state.liked ? (
+								<Button size="small" color="secondary" onClick={() => this.likeUnlike(false)}>UNLIKE</Button>
+							) : (
+								<Button size="small" onClick={() => this.likeUnlike(true)}>LIKE</Button>
+							)
+						}
 						<Button size="small" onClick={()=>{this.getAllComments()}}>COMMENT</Button>
 						<Link to={"/blog/"+this.props.blog._id}>
 							<Button size="small">FULL ARTICLE</Button>
