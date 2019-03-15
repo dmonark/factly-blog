@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import moment from 'moment';
 
 //UI
 import Card from '@material-ui/core/Card';
@@ -25,10 +24,9 @@ class BlogCard extends Component {
 	constructor(props) {
 		super(props);
 		var likedByUser = false
-		if(props.auth.user && props.blog.likes.find(x => x.userId === props.auth.user._id))
-			var likedByUser = true
+		if(props.auth.user && props.blog.likes.find(x => x.user === props.auth.user._id))
+			likedByUser = true
 		this.state ={
-			liked: false,
 			commentOpen: false,
 			newComment: "",
 			comments: [],
@@ -40,7 +38,7 @@ class BlogCard extends Component {
 			var commentsCopy = this.state.comments
 			commentsCopy.push({
 				'text': this.state.newComment,
-				'userId': this.props.auth.user._id,
+				'user': this.props.auth.user._id,
 				'createdAt': Date.now(),
 				'author': this.props.auth.user
 			})
@@ -64,7 +62,7 @@ class BlogCard extends Component {
 		})
 		var successCallback = function(data){
 			this.setState({ 
-				comments: data
+				comments: data.comments
 			});
 		}.bind(this)
 		
@@ -101,7 +99,7 @@ class BlogCard extends Component {
 					<Avatar>
 						<ImageIcon />
 					</Avatar>
-					<ListItemText primary={comments[i].text} secondary={"By " + comments[i].author.name + " at " +moment(comments[i].createdAt).fromNow()} />
+					<ListItemText primary={comments[i].text} secondary={"By " + comments[i].user.name} />
 				</ListItem>
 			)
 		}
@@ -109,6 +107,7 @@ class BlogCard extends Component {
       <div className="each-blog">
 				<Card  className="blog-card">
 					<CardContent>
+						<Typography variant="overline" gutterBottom>In {this.props.blog.category} by {this.props.blog.author.name}</Typography>
 						<Typography variant="h5" component="h2">{this.props.blog.title}</Typography>
 						<Typography component="p">{this.props.blog.desc}</Typography>
 					</CardContent>

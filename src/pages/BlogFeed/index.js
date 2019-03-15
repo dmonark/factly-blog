@@ -1,13 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 
 //UI
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import CardActions from '@material-ui/core/CardActions';
 import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -17,12 +14,13 @@ import FormControl from '@material-ui/core/FormControl';
 //other
 import { apiGetCall } from './../../services/network';
 import BlogCard from './BlogCard';
+import { blogActions } from './../../actions';
+import { authorActions } from './../../actions';
 
 class BlogFeed extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			blogs: [],
 			author: "all",
 			category: "all",
 			authors: []
@@ -37,14 +35,14 @@ class BlogFeed extends Component {
 	
 	getAllBlogs(){
 		var successCallback = function(data){
-			this.setState({ 
-				blogs: data
-			});
+			const { dispatch } = this.props;
+			dispatch(blogActions.addBlog(data));
 		}.bind(this)
 		
 		var errorCallback = function(data){
 			console.log("ERROR")
 		}
+		
 		var callURL = "/blog?"
 		if(this.state.category !== "all")
 			callURL += "category=" + this.state.category + "&"
@@ -55,9 +53,8 @@ class BlogFeed extends Component {
 	}
 	getAllAuthor(){
 		var successCallback = function(data){
-			this.setState({ 
-				authors: data
-			});
+			const { dispatch } = this.props;
+			dispatch(authorActions.addAuthor(data));
 		}.bind(this)
 		
 		var errorCallback = function(data){
@@ -74,8 +71,9 @@ class BlogFeed extends Component {
 		});
 	};
 	render() {
-		const { blogs, authors } = this.state
-    var blogList = []
+		const { blogs } = this.props.blogs
+		const { authors } = this.props.authors
+		var blogList = []
 		for(var i = 0; i < blogs.length; i++){
 			blogList.push(
 				<BlogCard
@@ -147,9 +145,11 @@ class BlogFeed extends Component {
 }
 
 function mapStateToProps(state) {
-    const { auth } = state;
+    const { auth, blogs, authors } = state;
     return {
-        auth
+        auth,
+				blogs,
+				authors
     };
 }
 
