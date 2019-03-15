@@ -13,18 +13,18 @@ import FormControl from '@material-ui/core/FormControl';
 
 //other
 import { apiGetCall } from './../../services/network';
-import BlogCard from './BlogCard';
-import { blogActions } from './../../actions';
-import { authorActions } from './../../actions';
-
+import BlogCard from './../Common/BlogCard';
+import { blogActions, filterActions, snackbarActions } from './../../actions';
+import SideBar from './../Common/SideBar';
 class BlogFeed extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			author: "all",
-			category: "all",
-			authors: []
+			category: "all"
 		}
+		const { dispatch } = this.props;
+		dispatch(blogActions.deleteEveryBlog());
 		this.getAllBlogs = this.getAllBlogs.bind(this)
 	}
 	
@@ -36,12 +36,13 @@ class BlogFeed extends Component {
 	getAllBlogs(){
 		var successCallback = function(data){
 			const { dispatch } = this.props;
-			dispatch(blogActions.addBlog(data));
+			dispatch(blogActions.addBlogs(data));
 		}.bind(this)
 		
 		var errorCallback = function(data){
-			console.log("ERROR")
-		}
+			const { dispatch } = this.props;
+			dispatch(snackbarActions.addSnackbar("Something went wrong"));
+		}.bind(this)
 		
 		var callURL = "/blog?"
 		if(this.state.category !== "all")
@@ -54,12 +55,13 @@ class BlogFeed extends Component {
 	getAllAuthor(){
 		var successCallback = function(data){
 			const { dispatch } = this.props;
-			dispatch(authorActions.addAuthor(data));
+			dispatch(filterActions.addAuthor(data));
 		}.bind(this)
 		
 		var errorCallback = function(data){
-			console.log("ERROR")
-		}
+			const { dispatch } = this.props;
+			dispatch(snackbarActions.addSnackbar("Something went wrong"));
+		}.bind(this)
 		
 		apiGetCall('/user', successCallback, errorCallback)
 	}
@@ -72,7 +74,7 @@ class BlogFeed extends Component {
 	};
 	render() {
 		const { blogs } = this.props.blogs
-		const { authors } = this.props.authors
+		const { authors, categories } = this.props.filter
 		var blogList = []
 		for(var i = 0; i < blogs.length; i++){
 			blogList.push(
@@ -88,10 +90,22 @@ class BlogFeed extends Component {
 				<MenuItem key={"filter-author"+authors[j]._id} value={authors[j]._id}>{authors[j].name}</MenuItem>
 			)
 		}
+		var categoryList = []
+		for(var k = 0; k < categories.length; k++){
+			categoryList.push(
+				<MenuItem key={"filter-category"+k} value={categories[k].value}>{categories[k].name}</MenuItem>
+			)
+		}
 		return (
       <div>
 				<Grid container spacing={8}>
 					<Grid item xs={1} />
+					<Grid item xs={2}>
+						<SideBar />
+					</Grid>
+					<Grid item xs={4}>
+						{blogList}
+					</Grid>
 					<Grid item xs={2}>
 						<Card>
 							<CardContent>
@@ -110,9 +124,7 @@ class BlogFeed extends Component {
 										}}
 									>
 										<MenuItem value="all">All</MenuItem>
-										<MenuItem value="science">Science</MenuItem>
-										<MenuItem value="tech">Tech</MenuItem>
-										<MenuItem value="Politics">Politics</MenuItem>
+										{categoryList}
 									</Select>
 								</FormControl>
 								</div>
@@ -135,9 +147,6 @@ class BlogFeed extends Component {
 							</CardContent>
 						</Card>
 					</Grid>
-					<Grid item xs={4}>
-						{blogList}
-					</Grid>
 				</Grid>
       </div>
     );
@@ -145,11 +154,11 @@ class BlogFeed extends Component {
 }
 
 function mapStateToProps(state) {
-    const { auth, blogs, authors } = state;
+    const { auth, blogs, filter } = state;
     return {
         auth,
 				blogs,
-				authors
+				filter
     };
 }
 

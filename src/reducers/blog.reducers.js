@@ -9,6 +9,17 @@ export function blogs(state = initialState, action) {
 			return {
         blogs: action.blogs
       };
+		case blogConstants.BLOG_DELETE:
+			var newBlogs = state.blogs
+			var removeIndex = newBlogs.findIndex(x => x._id === action.blog._id)
+			newBlogs.splice(removeIndex, 1);
+			return {
+				blogs: newBlogs
+			};
+		case blogConstants.BLOG_REMOVE:
+			return {
+				blogs: initialState
+			};
     default:
       return state
   }

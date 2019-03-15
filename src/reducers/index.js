@@ -1,12 +1,14 @@
 import { combineReducers } from 'redux';
 import { auth } from './auth.reducers';
 import { blogs } from './blog.reducers';
-import { authors } from './authors.reducers';
+import { filter } from './filter.reducers';
+import { snackbar } from './snackbar.reducers';
 
 const rootReducer = combineReducers({
   auth,
 	blogs,
-	authors
+	filter,
+	snackbar
 });
 
 export default rootReducer;

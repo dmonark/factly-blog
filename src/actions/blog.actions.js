@@ -1,9 +1,19 @@
 import { blogConstants } from '../constants';
 
 export const blogActions = {
-  addBlog,
+  addBlogs,
+	deleteBlog,
+	deleteEveryBlog
 };
 
-function addBlog(blogs) {
+function addBlogs(blogs) {
 	return { type: blogConstants.BLOG_GET, blogs};
+}
+
+function deleteBlog(blog) {
+	return { type: blogConstants.BLOG_DELETE, blog}
+}
+
+function deleteEveryBlog() {
+	return { type: blogConstants.BLOG_REMOVE}
 }

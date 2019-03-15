@@ -1,0 +1,4 @@
+export const snackbarConstants = {
+  SNACKBAR_SHOW: 'SNACKBAR_DISPLAY_SHOW',
+	SNACKBAR_REMOVE: 'SNACKBAR_DISPLAY_REMOVE'
+};

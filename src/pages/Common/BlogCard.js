@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 
 //UI
 import Card from '@material-ui/core/Card';
@@ -15,10 +14,33 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Avatar from '@material-ui/core/Avatar';
-import ImageIcon from '@material-ui/icons/Image';
+import IconButton from '@material-ui/core/IconButton';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 //other
-import { apiGetCall, apiPostCall } from './../../services/network';
+import { apiGetCall, apiPostCall, apiDeleteCall } from './../../services/network';
+import { blogActions, snackbarActions } from './../../actions';
+
+class BlogCardComment extends Component {
+	render() {
+		const { comment }= this.props
+		return(
+			<ListItem>
+				<ListItemAvatar>
+					<Avatar>{comment.user.name[0]}</Avatar>
+				</ListItemAvatar>
+				<ListItemText primary={comment.text} secondary={"By " + comment.user.name} />
+				<ListItemSecondaryAction>
+					<IconButton aria-label="Delete" onClick={()=>{this.props.deleteComment(comment._id)}}>
+						<DeleteIcon />
+					</IconButton>
+				</ListItemSecondaryAction>
+			</ListItem>
+		)
+	}
+}
 
 class BlogCard extends Component {
 	constructor(props) {
@@ -32,15 +54,15 @@ class BlogCard extends Component {
 			comments: [],
 			liked: likedByUser
 		}
+		this.deleteComment = this.deleteComment.bind(this)
 	}
 	postComment(){
 		var successCallback = function(data){
 			var commentsCopy = this.state.comments
 			commentsCopy.push({
 				'text': this.state.newComment,
-				'user': this.props.auth.user._id,
 				'createdAt': Date.now(),
-				'author': this.props.auth.user
+				'user': this.props.auth.user
 			})
 			this.setState({
 				newComment: "",
@@ -49,26 +71,26 @@ class BlogCard extends Component {
 		}.bind(this)
 		
 		var errorCallback = function(data){
-			console.log("ERROR")
-		}
+			const { dispatch } = this.props;
+			dispatch(snackbarActions.addSnackbar("Something went wrong"));
+		}.bind(this)
 		var sendData = {
 			'text': this.state.newComment
 		}
 		apiPostCall('/blog/'+this.props.blog._id+'/comment', sendData, this.props.auth.token, successCallback, errorCallback)
 	}
 	getAllComments(){
-		this.setState({
-			commentOpen: true
-		})
 		var successCallback = function(data){
 			this.setState({ 
+				commentOpen: true,
 				comments: data.comments
 			});
 		}.bind(this)
 		
 		var errorCallback = function(data){
-			console.log("ERROR")
-		}
+			const { dispatch } = this.props;
+			dispatch(snackbarActions.addSnackbar("Something went wrong"));
+		}.bind(this)
 		
 		apiGetCall('/blog/'+this.props.blog._id+'/comment', successCallback, errorCallback)
 	}
@@ -80,12 +102,44 @@ class BlogCard extends Component {
 		}.bind(this)
 		
 		var errorCallback = function(data){
-			console.log("ERROR")
-		}
+			const { dispatch } = this.props;
+			dispatch(snackbarActions.addSnackbar("Something went wrong"));
+		}.bind(this)
 		var whichURL = actionType ? '/like' : '/unlike'
 		apiPostCall('/blog/'+ this.props.blog._id + whichURL , {}, this.props.auth.token, successCallback, errorCallback)
 	}
-	
+	deleteBlog(){
+		var successCallback = function(data){
+			const { dispatch } = this.props;
+			dispatch(blogActions.deleteBlog(data));
+			dispatch(snackbarActions.addSnackbar("Successfully blog deleted"));
+		}.bind(this)
+		
+		var errorCallback = function(data){
+			const { dispatch } = this.props;
+			dispatch(snackbarActions.addSnackbar("Something went wrong"));
+		}.bind(this)
+		apiDeleteCall('/blog/'+ this.props.blog._id, {}, this.props.auth.token, successCallback, errorCallback)
+	}
+	deleteComment(commentID){
+		var successCallback = function(data){
+			var commentsCopy = this.state.comments
+			var removeIndex = commentsCopy.findIndex(x => x._id === commentID)
+			commentsCopy.splice(removeIndex, 1);
+			this.setState({
+				comments: commentsCopy
+			})
+			const { dispatch } = this.props;
+			dispatch(snackbarActions.addSnackbar("Successfully comment deleted"));
+		}.bind(this)
+		
+		var errorCallback = function(data){
+			const { dispatch } = this.props;
+			dispatch(snackbarActions.addSnackbar("Something went wrong"));
+		}.bind(this)
+		var deleteURL = '/blog/'+ this.props.blog._id + '/comment/' + commentID
+		apiDeleteCall(deleteURL, {}, this.props.auth.token, successCallback, errorCallback)
+	}
 	handleChange = name => event => {
     this.setState({ [name]: event.target.value });
   };
@@ -95,17 +149,16 @@ class BlogCard extends Component {
 		var commentList = []
 		for(var i = 0; i < comments.length; i++){
 			commentList.push(
-				<ListItem key={this.props.blog._id + "comment" + i}>
-					<Avatar>
-						<ImageIcon />
-					</Avatar>
-					<ListItemText primary={comments[i].text} secondary={"By " + comments[i].user.name} />
-				</ListItem>
+				<BlogCardComment
+					key={this.props.blog._id + "comment" + i}
+					comment={comments[i]}
+					deleteComment={this.deleteComment}
+				/>
 			)
 		}
 		return (
       <div className="each-blog">
-				<Card  className="blog-card">
+				<Card className="blog-card">
 					<CardContent>
 						<Typography variant="overline" gutterBottom>In {this.props.blog.category} by {this.props.blog.author.name}</Typography>
 						<Typography variant="h5" component="h2">{this.props.blog.title}</Typography>
@@ -113,14 +166,18 @@ class BlogCard extends Component {
 					</CardContent>
 					<CardActions>
 						{
-							this.state.liked ? (
+							this.props.auth.user && this.state.liked ? (
 								<Button size="small" color="secondary" onClick={() => this.likeUnlike(false)}>UNLIKE</Button>
-							) : (
+							) : this.props.auth.user && !this.state.liked ? (
 								<Button size="small" onClick={() => this.likeUnlike(true)}>LIKE</Button>
-							)
+							) : null
 						}
 						<Button size="small" onClick={()=>{this.getAllComments()}}>COMMENT</Button>
-						<Button component={Link} to={"/blog/"+this.props.blog._id} size="small">FULL ARTICLE</Button>
+						{
+							this.props.auth.user && this.props.auth.user._id === this.props.blog.author._id ? (
+								<Button size="small" color="secondary" onClick={() => this.deleteBlog()}>DELETE</Button>
+							) : null
+						}
 					</CardActions>
 					<Collapse in={this.state.commentOpen} timeout="auto">
 						<CardContent>
