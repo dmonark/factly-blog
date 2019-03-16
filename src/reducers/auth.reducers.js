@@ -12,6 +12,11 @@ export function auth(state = initialState, action) {
         user: action.user,
 				token: action.token
       };
+		case userConstants.USER_UPDATE:
+			return {
+				...state,
+				user: action.user
+			}
     case userConstants.LOGOUT:
       return {};
     default:

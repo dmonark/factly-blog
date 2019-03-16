@@ -23,6 +23,7 @@ import CategoriesFeed from "./pages/CategoriesFeed";
 import Category from "./pages/Category";
 import Author from "./pages/Author";
 import AuthorsFeed from "./pages/AuthorsFeed";
+import Setting from "./pages/Setting";
 
 class App extends Component {
   constructor() {
@@ -112,6 +113,7 @@ class App extends Component {
 							<Route path="/category/:name" component={Category} />
 							<Route path="/authors" component={AuthorsFeed} />
 							<Route path="/author/:id" component={Author} />
+							<Route path="/setting" component={Setting} />
               {auth.user ? <Route path="/profile" component={Profile} /> : null}
             </div>
           </Router>

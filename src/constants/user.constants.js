@@ -1,5 +1,5 @@
 export const userConstants = {
     LOGIN_SUCCESS: 'USERS_LOGIN_SUCCESS',
-    
+    USER_UPDATE: 'USERS_UPDTAE_SUCCESS',
     LOGOUT: 'USERS_LOGOUT',
 };

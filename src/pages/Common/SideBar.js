@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from "react-redux";
 import { Link } from 'react-router-dom';
 
 //UI
@@ -9,6 +10,8 @@ import HomeIcon from "@material-ui/icons/Home";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import AttachmentIcon from "@material-ui/icons/Attachment";
 import PortraitIcon from "@material-ui/icons/Portrait";
+import SettingsIcon from "@material-ui/icons/Settings";
+import Divider from '@material-ui/core/Divider';
 
 class SideBar extends Component {
 	render() {
@@ -21,14 +24,24 @@ class SideBar extends Component {
 							<Button component={Link} to="/" color="secondary"><HomeIcon />&nbsp;Home</Button>
 						</div>
 						<div>
-							<Button component={Link} to="/profile" color="secondary"><AccountCircleIcon />&nbsp;Profile</Button>
-						</div>
-						<div>
 							<Button component={Link} to="/authors" color="secondary"><PortraitIcon />&nbsp;Authors</Button>
 						</div>
 						<div>
 							<Button component={Link} to="/categories" color="secondary"><AttachmentIcon />&nbsp;Categories</Button>
 						</div>
+						{
+							this.props.auth.user ? (
+								<div>
+									<Divider />
+									<div>
+										<Button component={Link} to="/profile" color="secondary"><AccountCircleIcon />&nbsp;Profile</Button>
+									</div>						
+									<div>
+										<Button component={Link} to="/setting" color="secondary"><SettingsIcon />&nbsp;Setting</Button>
+									</div>
+								</div>
+							) : null
+						}
 					</CardContent>
 				</Card>
       </div>
@@ -36,5 +49,12 @@ class SideBar extends Component {
   }
 }
 
-export default SideBar; 
+function mapStateToProps(state) {
+  const { auth } = state;
+  return {
+    auth
+  };
+}
 
+const connectedSideBar = connect(mapStateToProps)(SideBar);
+export default connectedSideBar;

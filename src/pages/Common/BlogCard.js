@@ -22,6 +22,7 @@ import DeleteForeverIcon from "@material-ui/icons/DeleteForever";
 import CommentIcon from "@material-ui/icons/Comment";
 import ThumbUpIcon from "@material-ui/icons/ThumbUp";
 import Link from '@material-ui/core/Link';
+import Divider from '@material-ui/core/Divider';
 
 //other
 import {
@@ -33,33 +34,34 @@ import { blogActions, snackbarActions } from "./../../actions";
 
 class BlogCardComment extends Component {
   render() {
-	const { auth, comment } = this.props;
-	return (
-		<ListItem>
-			<ListItemAvatar>
-				<Avatar>{comment.user.name[0]}</Avatar>
-			</ListItemAvatar>
-			<ListItemText
-				primary={comment.text}
-				secondary={"By " + comment.user.name}
-			/>
-			{
-				auth.user && auth.user._id === comment.user._id ? (
-					<ListItemSecondaryAction>
-						<IconButton
-							color="secondary"
-							aria-label="Delete"
-							onClick={() => {
-								this.props.deleteComment(comment._id);
-							}}
-						>
-							<DeleteForeverIcon />
-						</IconButton>
-					</ListItemSecondaryAction>
-				) : null
-			}
-		</ListItem>
-	);
+		const { auth, comment } = this.props;
+		return (
+			<ListItem divider>
+				<ListItemAvatar>
+					<Avatar>{comment.user.name[0]}</Avatar>
+					
+				</ListItemAvatar>
+				<ListItemText
+					primary={comment.text}
+					secondary={<RouterLink to={"/author/"+comment.user._id}>{comment.user.name}</RouterLink>}
+				/>
+				{
+					auth.user && auth.user._id === comment.user._id ? (
+						<ListItemSecondaryAction>
+							<IconButton
+								color="secondary"
+								aria-label="Delete"
+								onClick={() => {
+									this.props.deleteComment(comment._id);
+								}}
+							>
+								<DeleteForeverIcon />
+							</IconButton>
+						</ListItemSecondaryAction>
+					) : null
+				}
+			</ListItem>
+		);
 	}
 }
 
@@ -219,11 +221,12 @@ class BlogCard extends Component {
             <Typography variant="overline" gutterBottom>
               In <Link component={RouterLink} to={"/category/"+category['value']}>{ category['name'] }</Link> by <Link component={RouterLink} to={"/author/"+this.props.blog.author._id}>{this.props.blog.author.name}</Link>
             </Typography>
-            <Typography variant="h5" component="h2">
+            <Typography variant="h5">
               {this.props.blog.title}
             </Typography>
-            <Typography component="p">{this.props.blog.desc}</Typography>
+            <Typography variant="p">{this.props.blog.desc}</Typography>
           </CardContent>
+					<Divider />
           <CardActions>
             {
 							this.props.auth.user && this.state.liked ? (
