@@ -13,13 +13,16 @@ import ListItemText from "@material-ui/core/ListItemText";
 //other
 import { apiGetCall } from "./../../services/network";
 import BlogCard from "./../Common/BlogCard";
-import { blogActions, snackbarActions } from "./../../actions";
 import SideBar from "./../Common/SideBar";
+import { blogActions, snackbarActions } from "./../../actions";
+import { history } from './../../helpers';
 
-class Blog extends Component {
+class Category extends Component {
   constructor(props) {
     super(props);
-    const { dispatch } = this.props;
+    if( this.props.auth.user && this.props.auth.user._id === this.props.match.params.id)
+			history.push('/profile');
+		const { dispatch } = this.props;
     dispatch(blogActions.deleteEveryBlog());
     this.getAllBlogs = this.getAllBlogs.bind(this);
   }
@@ -39,18 +42,23 @@ class Blog extends Component {
       dispatch(snackbarActions.addSnackbar("Something went wrong"));
     }.bind(this);
 
-    var callURL = "/blog?author=" + this.props.auth.user._id;
+		const { id } = this.props.match.params
+    
+    var callURL = "/blog?";
+    callURL += "author=" + id;
+    
     apiGetCall(callURL, successCallback, errorCallback);
   }
-
   render() {
-    const { auth } = this.props;
     const { blogs } = this.props.blogs;
-    var blogList = [];
+		const { authors } = this.props.filter;
+		const { id } = this.props.match.params
+    const author = authors.find(x => x._id === id)
+		var blogList = [];
     for (var i = 0; i < blogs.length; i++) {
       blogList.push(<BlogCard blog={blogs[i]} key={blogs[i]._id} />);
     }
-
+    
     return (
       <div>
         <Grid container spacing={8}>
@@ -59,21 +67,25 @@ class Blog extends Component {
             <SideBar />
           </Grid>
           <Grid item xs={4}>
-            <div className="each-blog">
-              <Card>
-                <CardContent>
-                  <List>
-                    <ListItem>
-                      <Avatar>{auth.user.name[0]}</Avatar>
-                      <ListItemText
-                        primary={auth.user.name}
-                        secondary={auth.user.bio}
-                      />
-                    </ListItem>
-                  </List>
-                </CardContent>
-              </Card>
-            </div>
+						{
+							author ? (
+								<div className="each-blog">
+									<Card>
+										<CardContent>
+											<List>
+												<ListItem>
+													<Avatar>{author.name[0]}</Avatar>
+													<ListItemText
+														primary={author.name}
+														secondary={author.bio}
+													/>
+												</ListItem>
+											</List>
+										</CardContent>
+									</Card>
+								</div>
+							) : null
+						}
             <div>{blogList}</div>
           </Grid>
         </Grid>
@@ -83,12 +95,13 @@ class Blog extends Component {
 }
 
 function mapStateToProps(state) {
-  const { auth, blogs } = state;
+  const { auth, blogs, filter } = state;
   return {
-    auth,
-    blogs
+		auth,
+    blogs,
+		filter
   };
 }
 
-const connectedBlog = connect(mapStateToProps)(Blog);
-export default connectedBlog;
+const connectedCategory = connect(mapStateToProps)(Category);
+export default connectedCategory;

@@ -45,3 +45,6 @@ body {
   height: 100;
 	background-color: orange;
 }
+.text-left{
+	text-align: left;
+}

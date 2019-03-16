@@ -3,20 +3,14 @@ import { connect } from "react-redux";
 
 //UI
 import Grid from "@material-ui/core/Grid";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import Avatar from "@material-ui/core/Avatar";
-import ListItemText from "@material-ui/core/ListItemText";
 
 //other
 import { apiGetCall } from "./../../services/network";
 import BlogCard from "./../Common/BlogCard";
-import { blogActions, snackbarActions } from "./../../actions";
 import SideBar from "./../Common/SideBar";
+import { blogActions, snackbarActions } from "./../../actions";
 
-class Blog extends Component {
+class Category extends Component {
   constructor(props) {
     super(props);
     const { dispatch } = this.props;
@@ -39,18 +33,20 @@ class Blog extends Component {
       dispatch(snackbarActions.addSnackbar("Something went wrong"));
     }.bind(this);
 
-    var callURL = "/blog?author=" + this.props.auth.user._id;
+		const { name } = this.props.match.params
+    
+    var callURL = "/blog?";
+    callURL += "category=" + name;
+    
     apiGetCall(callURL, successCallback, errorCallback);
   }
-
   render() {
-    const { auth } = this.props;
     const { blogs } = this.props.blogs;
-    var blogList = [];
+		var blogList = [];
     for (var i = 0; i < blogs.length; i++) {
       blogList.push(<BlogCard blog={blogs[i]} key={blogs[i]._id} />);
     }
-
+    
     return (
       <div>
         <Grid container spacing={8}>
@@ -59,22 +55,7 @@ class Blog extends Component {
             <SideBar />
           </Grid>
           <Grid item xs={4}>
-            <div className="each-blog">
-              <Card>
-                <CardContent>
-                  <List>
-                    <ListItem>
-                      <Avatar>{auth.user.name[0]}</Avatar>
-                      <ListItemText
-                        primary={auth.user.name}
-                        secondary={auth.user.bio}
-                      />
-                    </ListItem>
-                  </List>
-                </CardContent>
-              </Card>
-            </div>
-            <div>{blogList}</div>
+            {blogList}
           </Grid>
         </Grid>
       </div>
@@ -83,12 +64,11 @@ class Blog extends Component {
 }
 
 function mapStateToProps(state) {
-  const { auth, blogs } = state;
+  const { blogs } = state;
   return {
-    auth,
     blogs
   };
 }
 
-const connectedBlog = connect(mapStateToProps)(Blog);
-export default connectedBlog;
+const connectedCategory = connect(mapStateToProps)(Category);
+export default connectedCategory;
