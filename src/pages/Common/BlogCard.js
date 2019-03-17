@@ -98,21 +98,16 @@ class BlogCard extends Component {
       newComment: "",
       comments: [],
 			likes: [],
+			totalLikes: props.blog.likes.length,
       liked: likedByUser
     };
     this.deleteComment = this.deleteComment.bind(this);
   }
   postComment() {
     var successCallback = function(data) {
-      var commentsCopy = this.state.comments;
-      commentsCopy.push({
-        text: this.state.newComment,
-        createdAt: Date.now(),
-        user: this.props.auth.user
-      });
       this.setState({
         newComment: "",
-        comments: commentsCopy
+        comments: data.comments
       });
     }.bind(this);
 
@@ -171,7 +166,13 @@ class BlogCard extends Component {
   }
   likeUnlike(actionType) {
     var successCallback = function(data) {
-      this.setState({
+      var newTotalLikes = this.state.totalLikes
+			if(actionType)
+				newTotalLikes++
+			else
+				newTotalLikes--
+			this.setState({
+				totalLikes: newTotalLikes,
         liked: actionType
       });
     }.bind(this);
@@ -210,11 +211,8 @@ class BlogCard extends Component {
   }
   deleteComment(commentID) {
     var successCallback = function(data) {
-      var commentsCopy = this.state.comments;
-      var removeIndex = commentsCopy.findIndex(x => x._id === commentID);
-      commentsCopy.splice(removeIndex, 1);
       this.setState({
-        comments: commentsCopy
+        comments: data.comments
       });
       const { dispatch } = this.props;
       dispatch(snackbarActions.addSnackbar("Successfully comment deleted"));
@@ -277,7 +275,7 @@ class BlogCard extends Component {
 					<Divider />
           <CardActions>
             <Chip
-							avatar={<Avatar>{this.props.blog.likes.length}</Avatar>}
+							avatar={<Avatar>{this.state.totalLikes}</Avatar>}
 							label="Likes"
 							color="secondary"
 							onClick={() => {this.getAllLikes()}}

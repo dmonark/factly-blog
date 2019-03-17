@@ -3,7 +3,8 @@ import { blogConstants } from '../constants';
 export const blogActions = {
   addBlogs,
 	deleteBlog,
-	deleteEveryBlog
+	deleteEveryBlog,
+	addOneBlog
 };
 
 function addBlogs(blogs) {
@@ -16,4 +17,8 @@ function deleteBlog(blog) {
 
 function deleteEveryBlog() {
 	return { type: blogConstants.BLOG_REMOVE}
+}
+
+function addOneBlog(blog) {
+	return { type: blogConstants.ADD_BLOG, blog}
 }

@@ -1,6 +1,6 @@
 import { filterActions, snackbarActions } from "./../actions";
 import { apiGetCall } from "./network";
-export function getAllAuthorService(dispatch) {
+export function getAllAuthorService(dispatch) { //get all authors list from db
 	var successCallback = function(data) {
 		dispatch(filterActions.addAuthor(data));
 	}

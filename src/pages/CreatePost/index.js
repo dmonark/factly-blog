@@ -12,7 +12,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 
 //other
 import { apiPostCall } from "./../../services/network";
-import { snackbarActions } from "./../../actions";
+import { blogActions, snackbarActions } from "./../../actions";
 
 class CreatePost extends Component {
   constructor() {
@@ -31,7 +31,10 @@ class CreatePost extends Component {
   addPost() {
     var successCallback = function(data) {
       this.props.closeModel();
-      const { dispatch } = this.props;
+      var newBlog = data
+			newBlog['author'] = this.props.auth.user
+			const { dispatch } = this.props;
+			dispatch(blogActions.addOneBlog(newBlog));
       dispatch(snackbarActions.addSnackbar("New blog created"));
     }.bind(this);
 
