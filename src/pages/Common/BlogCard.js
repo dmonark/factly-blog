@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Link as RouterLink } from 'react-router-dom'
+import { Link as RouterLink } from 'react-router-dom';
+import moment from "moment";
 
 //UI
 import Card from "@material-ui/core/Card";
@@ -23,6 +24,7 @@ import CommentIcon from "@material-ui/icons/Comment";
 import ThumbUpIcon from "@material-ui/icons/ThumbUp";
 import Link from '@material-ui/core/Link';
 import Divider from '@material-ui/core/Divider';
+import Chip from '@material-ui/core/Chip';
 
 //other
 import {
@@ -65,6 +67,22 @@ class BlogCardComment extends Component {
 	}
 }
 
+class BlogCardLike extends Component {
+  render() {
+		const { like } = this.props;
+		return (
+			<ListItem divider>
+				<ListItemAvatar>
+					<Avatar>{like.user.name[0]}</Avatar>
+				</ListItemAvatar>
+				<ListItemText
+					primary={like.user.name}
+				/>
+			</ListItem>
+		);
+	}
+}
+
 class BlogCard extends Component {
   constructor(props) {
     super(props);
@@ -76,8 +94,10 @@ class BlogCard extends Component {
       likedByUser = true;
     this.state = {
       commentOpen: false,
+			likeOpen: false,
       newComment: "",
       comments: [],
+			likes: [],
       liked: likedByUser
     };
     this.deleteComment = this.deleteComment.bind(this);
@@ -126,6 +146,25 @@ class BlogCard extends Component {
 
     apiGetCall(
       "/blog/" + this.props.blog._id + "/comment",
+      successCallback,
+      errorCallback
+    );
+  }
+	getAllLikes() {
+    var successCallback = function(data) {
+      this.setState({
+				likeOpen: true,
+        likes: data.likes
+      });
+    }.bind(this);
+
+    var errorCallback = function(data) {
+      const { dispatch } = this.props;
+      dispatch(snackbarActions.addSnackbar("Something went wrong"));
+    }.bind(this);
+
+    apiGetCall(
+      "/blog/" + this.props.blog._id + "/likes",
       successCallback,
       errorCallback
     );
@@ -199,7 +238,7 @@ class BlogCard extends Component {
   };
 
   render() {
-    const { comments } = this.state;
+    const { comments, likes } = this.state;
 		const { categories } = this.props.filter;
 		const { auth } = this.props
 		var category = categories.find(x => x.value === this.props.blog.category)
@@ -214,12 +253,21 @@ class BlogCard extends Component {
         />
       );
     }
+		var likeList = [];
+    for (var j = 0; j < likes.length; j++) {
+      likeList.push(
+        <BlogCardLike
+          key={this.props.blog._id + "likes" + j}
+          like={likes[j]}
+        />
+      );
+    }
     return (
       <div className="each-blog">
         <Card className="blog-card">
           <CardContent>
             <Typography variant="overline" gutterBottom>
-              In <Link component={RouterLink} to={"/category/"+category['value']}>{ category['name'] }</Link> by <Link component={RouterLink} to={"/author/"+this.props.blog.author._id}>{this.props.blog.author.name}</Link>
+              In <Link component={RouterLink} to={"/category/"+category['value']}>{ category['name'] }</Link> by <Link component={RouterLink} to={"/author/"+this.props.blog.author._id}>{this.props.blog.author.name}</Link>, {moment(this.props.blog.createdAt).fromNow()}
             </Typography>
             <Typography variant="h5">
               {this.props.blog.title}
@@ -228,7 +276,14 @@ class BlogCard extends Component {
           </CardContent>
 					<Divider />
           <CardActions>
-            {
+            <Chip
+							avatar={<Avatar>{this.props.blog.likes.length}</Avatar>}
+							label="Likes"
+							color="secondary"
+							onClick={() => {this.getAllLikes()}}
+							variant="outlined"
+						/>
+						{
 							this.props.auth.user && this.state.liked ? (
 								<Button
 									size="small"
@@ -263,6 +318,16 @@ class BlogCard extends Component {
 							) : null
 						}
           </CardActions>
+					<Collapse in={this.state.likeOpen} timeout="auto">
+            <CardContent>
+              <Typography>Likes</Typography>
+              <div>
+                <List>
+                  {likeList}
+                </List>
+              </div>
+            </CardContent>
+          </Collapse>
           <Collapse in={this.state.commentOpen} timeout="auto">
             <CardContent>
               <Typography>Comments</Typography>
