@@ -11,36 +11,21 @@ import Avatar from "@material-ui/core/Avatar";
 import ListItemText from "@material-ui/core/ListItemText";
 
 //other
-import { apiGetCall } from "./../../services/network";
 import BlogCard from "./../Common/BlogCard";
-import { blogActions, snackbarActions } from "./../../actions";
 import SideBar from "./../Common/SideBar";
+import { getAllBlogsService, deleteAllBlogsService } from "./../../services/blogs";
 
 class Blog extends Component {
   constructor(props) {
     super(props);
     const { dispatch } = this.props;
-    dispatch(blogActions.deleteEveryBlog());
-    this.getAllBlogs = this.getAllBlogs.bind(this);
+    deleteAllBlogsService(dispatch);
   }
 
   componentDidMount() {
-    this.getAllBlogs();
-  }
-
-  getAllBlogs() {
-    var successCallback = function(data) {
-      const { dispatch } = this.props;
-      dispatch(blogActions.addBlogs(data));
-    }.bind(this);
-
-    var errorCallback = function(data) {
-      const { dispatch } = this.props;
-      dispatch(snackbarActions.addSnackbar("Something went wrong"));
-    }.bind(this);
-
-    var callURL = "/blog?author=" + this.props.auth.user._id;
-    apiGetCall(callURL, successCallback, errorCallback);
+    const { dispatch } = this.props;
+		const { user } = this.props.auth;
+		getAllBlogsService(dispatch, "all", user._id)
   }
 
   render() {

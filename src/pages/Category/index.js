@@ -5,41 +5,23 @@ import { connect } from "react-redux";
 import Grid from "@material-ui/core/Grid";
 
 //other
-import { apiGetCall } from "./../../services/network";
 import BlogCard from "./../Common/BlogCard";
 import SideBar from "./../Common/SideBar";
-import { blogActions, snackbarActions } from "./../../actions";
+import { getAllBlogsService, deleteAllBlogsService } from "./../../services/blogs";
 
 class Category extends Component {
   constructor(props) {
     super(props);
     const { dispatch } = this.props;
-    dispatch(blogActions.deleteEveryBlog());
-    this.getAllBlogs = this.getAllBlogs.bind(this);
+    deleteAllBlogsService(dispatch);
   }
 
   componentDidMount() {
-    this.getAllBlogs();
-  }
-
-  getAllBlogs() {
-    var successCallback = function(data) {
-      const { dispatch } = this.props;
-      dispatch(blogActions.addBlogs(data));
-    }.bind(this);
-
-    var errorCallback = function(data) {
-      const { dispatch } = this.props;
-      dispatch(snackbarActions.addSnackbar("Something went wrong"));
-    }.bind(this);
-
+		const { dispatch } = this.props;
 		const { name } = this.props.match.params
-    
-    var callURL = "/blog?";
-    callURL += "category=" + name;
-    
-    apiGetCall(callURL, successCallback, errorCallback);
+    getAllBlogsService(dispatch, name, "all")
   }
+	
   render() {
     const { blogs } = this.props.blogs;
 		var blogList = [];

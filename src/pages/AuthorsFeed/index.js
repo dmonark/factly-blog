@@ -12,8 +12,7 @@ import Avatar from "@material-ui/core/Avatar";
 import ListItemText from "@material-ui/core/ListItemText";
 
 //other
-import { apiGetCall } from "./../../services/network";
-import { filterActions, snackbarActions } from "./../../actions";
+import { getAllAuthorService } from "./../../services/author";
 import SideBar from "./../Common/SideBar";
 
 function EachAuthor(props){
@@ -37,21 +36,9 @@ function EachAuthor(props){
 class AuthorsFeed extends Component {	
   componentDidMount() {
     const { authors } = this.props.filter;
+		const { dispatch } = this.props;
 		if(authors.length === 0)
-			this.getAllAuthor();
-  }
-	getAllAuthor() {
-    var successCallback = function(data) {
-      const { dispatch } = this.props;
-      dispatch(filterActions.addAuthor(data));
-    }.bind(this);
-
-    var errorCallback = function(data) {
-      const { dispatch } = this.props;
-      dispatch(snackbarActions.addSnackbar("Something went wrong"));
-    }.bind(this);
-
-    apiGetCall("/user", successCallback, errorCallback);
+			getAllAuthorService(dispatch);
   }
 	render() {
     const { authors } = this.props.filter;

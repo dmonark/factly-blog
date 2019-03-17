@@ -18,7 +18,7 @@ import { userActions, snackbarActions } from "./actions";
 import BlogFeed from "./pages/BlogFeed";
 import Profile from "./pages/Profile";
 import CreatePost from "./pages/CreatePost";
-import Login from "./pages/Login";
+import LoginRegister from "./pages/LoginRegister";
 import CategoriesFeed from "./pages/CategoriesFeed";
 import Category from "./pages/Category";
 import Author from "./pages/Author";
@@ -96,7 +96,7 @@ class App extends Component {
             />
           </div>
           <div>
-            <Login
+            <LoginRegister
               show={this.state.whichModel === "login"}
               closeModel={() => {
                 this.setState({ whichModel: "" });

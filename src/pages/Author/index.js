@@ -11,10 +11,11 @@ import Avatar from "@material-ui/core/Avatar";
 import ListItemText from "@material-ui/core/ListItemText";
 
 //other
-import { apiGetCall } from "./../../services/network";
+import { getAllAuthorService } from "./../../services/author";
+import { getAllBlogsService, deleteAllBlogsService } from "./../../services/blogs";
+
 import BlogCard from "./../Common/BlogCard";
 import SideBar from "./../Common/SideBar";
-import { blogActions, snackbarActions } from "./../../actions";
 import { history } from './../../helpers';
 
 class Category extends Component {
@@ -23,31 +24,16 @@ class Category extends Component {
     if( this.props.auth.user && this.props.auth.user._id === this.props.match.params.id)
 			history.push('/profile');
 		const { dispatch } = this.props;
-    dispatch(blogActions.deleteEveryBlog());
-    this.getAllBlogs = this.getAllBlogs.bind(this);
+    deleteAllBlogsService(dispatch);
   }
 
   componentDidMount() {
-    this.getAllBlogs();
-  }
-
-  getAllBlogs() {
-    var successCallback = function(data) {
-      const { dispatch } = this.props;
-      dispatch(blogActions.addBlogs(data));
-    }.bind(this);
-
-    var errorCallback = function(data) {
-      const { dispatch } = this.props;
-      dispatch(snackbarActions.addSnackbar("Something went wrong"));
-    }.bind(this);
-
+		const { authors } = this.props.filter;
+		const { dispatch } = this.props;
 		const { id } = this.props.match.params
-    
-    var callURL = "/blog?";
-    callURL += "author=" + id;
-    
-    apiGetCall(callURL, successCallback, errorCallback);
+		if(authors.length === 0)
+			getAllAuthorService(dispatch);
+    getAllBlogsService(dispatch, "all", id)
   }
   render() {
     const { blogs } = this.props.blogs;

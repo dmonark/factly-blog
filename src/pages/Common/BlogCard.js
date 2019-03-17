@@ -224,7 +224,7 @@ class BlogCard extends Component {
             <Typography variant="h5">
               {this.props.blog.title}
             </Typography>
-            <Typography variant="p">{this.props.blog.desc}</Typography>
+            <Typography variant="body1">{this.props.blog.desc}</Typography>
           </CardContent>
 					<Divider />
           <CardActions>

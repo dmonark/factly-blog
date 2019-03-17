@@ -12,10 +12,11 @@ import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 
 //other
-import { apiGetCall } from "./../../services/network";
+import { getAllAuthorService } from "./../../services/author";
+import { getAllBlogsService, deleteAllBlogsService } from "./../../services/blogs";
 import BlogCard from "./../Common/BlogCard";
-import { blogActions, filterActions, snackbarActions } from "./../../actions";
 import SideBar from "./../Common/SideBar";
+
 class BlogFeed extends Component {
   constructor(props) {
     super(props);
@@ -24,56 +25,25 @@ class BlogFeed extends Component {
       category: "all"
     };
     const { dispatch } = this.props;
-    dispatch(blogActions.deleteEveryBlog());
-    this.getAllBlogs = this.getAllBlogs.bind(this);
+    deleteAllBlogsService(dispatch)
   }
 
   componentDidMount() {
-    this.getAllBlogs();
     const { authors } = this.props.filter;
+		const { dispatch } = this.props;
 		if(authors.length === 0)
-			this.getAllAuthor();
+			getAllAuthorService(dispatch);
+		getAllBlogsService(dispatch, this.state.category, this.state.author);
   }
 
-  getAllBlogs() {
-    var successCallback = function(data) {
-      const { dispatch } = this.props;
-      dispatch(blogActions.addBlogs(data));
-    }.bind(this);
-
-    var errorCallback = function(data) {
-      const { dispatch } = this.props;
-      dispatch(snackbarActions.addSnackbar("Something went wrong"));
-    }.bind(this);
-
-    var callURL = "/blog?";
-    if (this.state.category !== "all")
-      callURL += "category=" + this.state.category + "&";
-    if (this.state.author !== "all")
-      callURL += "author=" + this.state.author + "&";
-
-    apiGetCall(callURL, successCallback, errorCallback);
-  }
-  getAllAuthor() {
-    var successCallback = function(data) {
-      const { dispatch } = this.props;
-      dispatch(filterActions.addAuthor(data));
-    }.bind(this);
-
-    var errorCallback = function(data) {
-      const { dispatch } = this.props;
-      dispatch(snackbarActions.addSnackbar("Something went wrong"));
-    }.bind(this);
-
-    apiGetCall("/user", successCallback, errorCallback);
-  }
   handleChange = name => event => {
     this.setState(
       {
         [name]: event.target.value
       },
       function() {
-        this.getAllBlogs();
+				const { dispatch } = this.props;
+        getAllBlogsService(dispatch, this.state.category, this.state.author);
       }
     );
   };
