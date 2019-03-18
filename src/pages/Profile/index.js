@@ -5,6 +5,7 @@ import { connect } from "react-redux";
 import Grid from "@material-ui/core/Grid";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
+import Typography from "@material-ui/core/Typography";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import Avatar from "@material-ui/core/Avatar";
@@ -59,7 +60,13 @@ class Blog extends Component {
                 </CardContent>
               </Card>
             </div>
-            <div>{blogList}</div>
+            <div>
+						{
+							blogList.length === 0 ? (
+								<Typography variant="Subheading">No posts found</Typography>
+							) : blogList
+						}
+						</div>
           </Grid>
         </Grid>
       </div>

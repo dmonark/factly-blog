@@ -8,6 +8,7 @@ import Grid from "@material-ui/core/Grid";
 import BlogCard from "./../Common/BlogCard";
 import SideBar from "./../Common/SideBar";
 import { getAllBlogsService, deleteAllBlogsService } from "./../../services/blogs";
+import Typography from "@material-ui/core/Typography";
 
 class Category extends Component {
   constructor(props) {
@@ -37,7 +38,11 @@ class Category extends Component {
             <SideBar />
           </Grid>
           <Grid item xs={4}>
-            {blogList}
+            {
+							blogList.length === 0 ?(
+								<Typography variant="Subheading">No posts found</Typography>
+							) : blogList
+						}
           </Grid>
         </Grid>
       </div>

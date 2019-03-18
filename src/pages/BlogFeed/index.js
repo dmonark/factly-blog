@@ -78,7 +78,11 @@ class BlogFeed extends Component {
             <SideBar />
           </Grid>
           <Grid item xs={4}>
-            {blogList}
+          {
+						blogList.length === 0 ? (
+							<Typography variant="Subheading">No posts found</Typography>
+						) : blogList
+					}
           </Grid>
           <Grid item xs={2}>
             <Card>
