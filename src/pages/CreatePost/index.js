@@ -20,7 +20,8 @@ class CreatePost extends Component {
     this.state = {
       title: "",
       desc: "",
-      category: "all"
+      category: "all",
+			isFetching: false
     };
   }
 
@@ -30,6 +31,9 @@ class CreatePost extends Component {
 
   addPost() {
     var successCallback = function(data) {
+			this.setState({
+				isFetching: false
+			})
       this.props.closeModel();
       var newBlog = data
 			newBlog['author'] = this.props.auth.user
@@ -39,14 +43,20 @@ class CreatePost extends Component {
     }.bind(this);
 
     var errorCallback = function(data) {
-      const { dispatch } = this.props;
+      this.setState({
+				isFetching: false
+			})
+			const { dispatch } = this.props;
       dispatch(snackbarActions.addSnackbar("Something went wrong"));
     }.bind(this);
 
     const { title, desc, category } = this.state;
 
     if (title && desc && category) {
-      var sendData = {
+      this.setState({
+				isFetching: true
+			})
+			var sendData = {
         title,
         desc,
         category
@@ -128,6 +138,7 @@ class CreatePost extends Component {
                   onClick={() => {
                     this.addPost();
                   }}
+									disabled={this.state.isFetching}
                 >
                   POST
                 </Button>

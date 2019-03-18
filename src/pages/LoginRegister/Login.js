@@ -15,26 +15,24 @@ class Login extends Component {
     super();
     this.state = {
       email: "",
-      password: ""
+      password: "",
+			isFetching: false
     };
   }
 
   handleChange = name => event => {
     this.setState({ [name]: event.target.value });
   };
-	
-	resetEverything() {
-		this.setState({
-			email: "",
-      password: ""
-		})
-	}
 
   handleLogin() {
     var successCallback = function(data) {
       localStorage.setItem("user", JSON.stringify(data.user));
       localStorage.setItem("token", data.token);
-			this.resetEverything();
+			this.setState({
+				email: "",
+				password: "",
+				isFetching: false
+			})
       const { dispatch } = this.props;
       dispatch(userActions.login(data.user, data.token));
       this.props.closeModel();
@@ -42,6 +40,9 @@ class Login extends Component {
     }.bind(this);
 
     var errorCallback = function(data) {
+			this.setState({
+				isFetching: false
+			})
       const { dispatch } = this.props;
       dispatch(snackbarActions.addSnackbar("Auth failed"));
     }.bind(this);
@@ -49,6 +50,9 @@ class Login extends Component {
     const { email, password } = this.state;
 
     if (email && password) {
+			this.setState({
+				isFetching: true
+			})
       var sendData = {
         email,
         password
@@ -93,6 +97,7 @@ class Login extends Component {
 						onClick={() => {
 							this.handleLogin();
 						}}
+						disabled={this.state.isFetching}
 					>
 						LOGIN
 					</Button>

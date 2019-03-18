@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from "react-redux";
 import { Link } from 'react-router-dom';
 
@@ -13,40 +13,37 @@ import PortraitIcon from "@material-ui/icons/Portrait";
 import SettingsIcon from "@material-ui/icons/Settings";
 import Divider from '@material-ui/core/Divider';
 
-class SideBar extends Component {
-	render() {
-		
-		return (
-      <div>
-				<Card className="each-blog">
-					<CardContent className="text-left">
-						<div>
-							<Button component={Link} to="/" color="secondary"><HomeIcon />&nbsp;Home</Button>
-						</div>
-						<div>
-							<Button component={Link} to="/authors" color="secondary"><PortraitIcon />&nbsp;Authors</Button>
-						</div>
-						<div>
-							<Button component={Link} to="/categories" color="secondary"><AttachmentIcon />&nbsp;Categories</Button>
-						</div>
-						{
-							this.props.auth.user ? (
+function SideBar(props) {
+	return (
+		<div>
+			<Card className="each-blog">
+				<CardContent className="text-left">
+					<div>
+						<Button component={Link} to="/" color="secondary"><HomeIcon />&nbsp;Home</Button>
+					</div>
+					<div>
+						<Button component={Link} to="/authors" color="secondary"><PortraitIcon />&nbsp;Authors</Button>
+					</div>
+					<div>
+						<Button component={Link} to="/categories" color="secondary"><AttachmentIcon />&nbsp;Categories</Button>
+					</div>
+					{
+						/*this.*/props.auth.user ? (
+							<div>
+								<Divider />
 								<div>
-									<Divider />
-									<div>
-										<Button component={Link} to="/profile" color="secondary"><AccountCircleIcon />&nbsp;Profile</Button>
-									</div>						
-									<div>
-										<Button component={Link} to="/setting" color="secondary"><SettingsIcon />&nbsp;Setting</Button>
-									</div>
+									<Button component={Link} to="/profile" color="secondary"><AccountCircleIcon />&nbsp;Profile</Button>
+								</div>						
+								<div>
+									<Button component={Link} to="/setting" color="secondary"><SettingsIcon />&nbsp;Setting</Button>
 								</div>
-							) : null
-						}
-					</CardContent>
-				</Card>
-      </div>
-    );
-  }
+							</div>
+						) : null
+					}
+				</CardContent>
+			</Card>
+		</div>
+  );
 }
 
 function mapStateToProps(state) {

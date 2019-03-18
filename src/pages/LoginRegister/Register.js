@@ -17,7 +17,8 @@ class Register extends Component {
       email: "",
       password: "",
 			name: "",
-			bio: ""
+			bio: "",
+			isFetching: false
     };
   }
 
@@ -25,32 +26,35 @@ class Register extends Component {
     this.setState({ [name]: event.target.value });
   };
 	
-	resetEverything() {
-		this.setState({
-			email: "",
-			name: "",
-			bio: "",
-			password: ""
-		})
-	}
-	
 	handleRegister() {
     var successCallback = function(data) {
+			this.setState({
+				email: "",
+				name: "",
+				bio: "",
+				password: "",
+				isFetching: false
+			})
       this.props.closeModel();
-			this.resetEverything();
 			const { dispatch } = this.props;
       dispatch(snackbarActions.addSnackbar("Success, Please Login"));
     }.bind(this);
 
     var errorCallback = function(data) {
-      const { dispatch } = this.props;
+			this.setState({
+				isFetching: false
+			})
+			const { dispatch } = this.props;
       dispatch(snackbarActions.addSnackbar("Registration failed"));
     }.bind(this);
 
     const { email, name, password, bio } = this.state;
 
     if (email && name && password && bio) {
-      var sendData = {
+      this.setState({
+				isFetching: true
+			})
+			var sendData = {
         email,
 				name,
 				password,
@@ -120,6 +124,7 @@ class Register extends Component {
 						onClick={() => {
 							this.handleRegister();
 						}}
+						disabled={this.state.isFetching}
 					>
 						REGISTER
 					</Button>
