@@ -43,6 +43,7 @@ class App extends Component {
     const { dispatch } = this.props;
     dispatch(userActions.logout());
     dispatch(snackbarActions.addSnackbar("Successfully logged out"));
+		window.location.reload();
   }
 
   render() {

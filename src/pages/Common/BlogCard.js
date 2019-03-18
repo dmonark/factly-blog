@@ -34,9 +34,8 @@ import {
 } from "./../../services/network";
 import { blogActions, snackbarActions } from "./../../actions";
 
-class BlogCardComment extends Component {
-  render() {
-		const { auth, comment } = this.props;
+function BlogCardComment(props) {
+  const { auth, comment } = props;
 		return (
 			<ListItem divider>
 				<ListItemAvatar>
@@ -54,7 +53,7 @@ class BlogCardComment extends Component {
 								color="secondary"
 								aria-label="Delete"
 								onClick={() => {
-									this.props.deleteComment(comment._id);
+									props.deleteComment(comment._id);
 								}}
 							>
 								<DeleteForeverIcon />
@@ -64,7 +63,6 @@ class BlogCardComment extends Component {
 				}
 			</ListItem>
 		);
-	}
 }
 
 class BlogCardLike extends Component {

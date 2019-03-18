@@ -80,7 +80,7 @@ class BlogFeed extends Component {
           <Grid item xs={4}>
           {
 						blogList.length === 0 ? (
-							<Typography variant="Subheading">No posts found</Typography>
+							<Typography variant="subtitle1">No posts found</Typography>
 						) : blogList
 					}
           </Grid>
